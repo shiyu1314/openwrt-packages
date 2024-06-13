@@ -17,13 +17,16 @@ dns:
     - 0.0.0.0
   port: 5553
   anonymize_client_ip: false
-  ratelimit: 20
+  ratelimit: 0
   ratelimit_subnet_len_ipv4: 24
   ratelimit_subnet_len_ipv6: 56
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - 127.0.0.1:5335
+    - tls://1.12.12.12
+    - tls://223.5.5.5
+    - https://223.5.5.5/dns-query
+    - https://1.12.12.12/dns-query
   upstream_dns_file: ""
   bootstrap_dns:
     - 223.5.5.5
@@ -40,10 +43,10 @@ dns:
   trusted_proxies:
     - 127.0.0.0/8
     - ::1/128
-  cache_size: 0
+  cache_size: 41943040
   cache_ttl_min: 0
   cache_ttl_max: 0
-  cache_optimistic: false
+  cache_optimistic: true
   bogus_nxdomain: []
   aaaa_disabled: true
   enable_dnssec: false
