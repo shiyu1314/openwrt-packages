@@ -23,10 +23,9 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - tls://120.53.53.53
+    - quic://dns.alidns.com
     - tls://223.5.5.5
     - https://223.5.5.5/dns-query
-    - https://120.53.53.53/dns-query
   upstream_dns_file: ""
   bootstrap_dns:
     - 223.5.5.5
