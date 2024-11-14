@@ -30,7 +30,8 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
           FEEDNAME: xd
-          PACKAGES: luci-app-adguardhome
+          PACKAGES: luci-app-adguardhome luci-app-emby
+          INDEX: 1
           NO_REFRESH_CHECK: true
 
       - name: Compress
