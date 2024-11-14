@@ -24,7 +24,7 @@ jobs:
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
           FEEDNAME: xd
-          PACKAGES: '*'
+          PACKAGES: luci-app-adguardhome
           NO_REFRESH_CHECK: true
 
       - name: Upload
