@@ -26,11 +26,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build
-        uses: openwrt/gh-action-sdk@main
+        uses: shiyu1314/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
           FEEDNAME: xd
-          PACKAGES: luci-app-adguardhome luci-app-emby
+          PACKAGES: luci-app-adguardhome
           INDEX: 1
           NO_REFRESH_CHECK: true
 
