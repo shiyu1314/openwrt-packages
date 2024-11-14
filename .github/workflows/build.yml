@@ -1,12 +1,18 @@
-name: Build Packages
+name: Feed Packages
 
 on:
+  schedule:
+    - cron: "0 22 * * *"
   workflow_dispatch:
+  push:
+    tags:
+      - v*
 
 jobs:
   build:
     name: ${{ matrix.arch }}-${{ matrix.branch }} build
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -27,8 +33,37 @@ jobs:
           PACKAGES: luci-app-adguardhome
           NO_REFRESH_CHECK: true
 
+      - name: Compress
+        run: |
+          mkdir -p public/${{ matrix.branch }}/${{ matrix.arch }}
+          mv bin/packages/${{ matrix.arch }}/xd public/${{ matrix.branch }}/${{ matrix.arch }}
+          tar -c -z -f xd_${{ matrix.arch }}-${{ matrix.branch }}.tar.gz public/${{ matrix.branch }}/${{ matrix.arch }}
+
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: xd_${{ matrix.arch }}-${{ matrix.branch }}
-          path: bin/packages/${{ matrix.arch }}/xd/*.ipk
+          path: xd_${{ matrix.arch }}-${{ matrix.branch }}.tar.gz
+
+  feed:
+    needs: build
+    name: feed
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v4
+        with:
+          pattern: xd_*
+          merge-multiple: true
+      
+      - name: Uncompress
+        run: |
+          for file in xd_*.tar.gz; do tar -x -z -f "$file"; done
+
+      - name: Feed
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          force_orphan: true
+          commit_message: Update Feed
