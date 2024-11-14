@@ -33,7 +33,6 @@ jobs:
           PACKAGES: luci-app-adguardhome
           INDEX: 1
           NO_REFRESH_CHECK: true
-          NO_DEFAULT_FEEDS: true
 
       - name: Compress
         run: |
