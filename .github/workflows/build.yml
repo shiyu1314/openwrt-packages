@@ -23,7 +23,7 @@ jobs:
         uses: openwrt/gh-action-sdk@main
         env:
           ARCH: ${{ matrix.arch }}-${{ matrix.branch }}
-          FEEDNAME: '*'
+          FEEDNAME: xd
           PACKAGES: '*'
           NO_REFRESH_CHECK: true
 
@@ -31,4 +31,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: xd_${{ matrix.arch }}-${{ matrix.branch }}
-          path: bin/packages/${{ matrix.arch }}/*/*.ipk
+          path: bin/packages/${{ matrix.arch }}/xd/*.ipk
