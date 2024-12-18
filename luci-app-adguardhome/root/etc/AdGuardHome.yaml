@@ -95,12 +95,12 @@ statistics:
   enabled: true
 filters:
   - enabled: true
-    url: https://ghp.ci/raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt
+    url: https://gh.api.99988866.xyz/https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/dns.txt
     name: dns
     id: 1716417452
 whitelist_filters:
   - enabled: true
-    url: https://ghp.ci/raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/allow.txt
+    url: https://gh.api.99988866.xyz/https://raw.githubusercontent.com/8680/GOODBYEADS/master/data/rules/allow.txt
     name: allow
     id: 1716417453
 user_rules: []
