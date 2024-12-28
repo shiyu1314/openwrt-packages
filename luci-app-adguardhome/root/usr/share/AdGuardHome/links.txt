@@ -1,0 +1,1 @@
+https://ghp.ci/https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz
