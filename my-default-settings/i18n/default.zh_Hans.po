@@ -16,7 +16,7 @@ msgstr "登录"
 msgid "Logout"
 msgstr "退出"
 
-msgid "Base Setting"
+msgid "Basic Setting"
 msgstr "基本设置"
 
 msgid "Log"
