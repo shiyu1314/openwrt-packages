@@ -23,7 +23,8 @@ define Package/my-default-settings
 	PKGARCH:=all
 	DEPENDS:= \
 		+luci-compat \
-		+@LUCI_LANG_zh_Hans
+		+@LUCI_LANG_zh_Hans \
+		+luci-i18n-base-zh-cn
 endef
 
 define Build/Compile
