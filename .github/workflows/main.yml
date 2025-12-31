@@ -1,0 +1,76 @@
+name: Auto Update sing-box
+
+on:
+  schedule:
+    - cron: '0 3 * * *' # 每天北京时间上午 11 点运行
+  workflow_dispatch:      # 支持手动触发
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get Latest reF1nd 1.12.x Tag
+        id: get_tag
+        run: |
+          # 增加分页到 100，确保能搜到 1.12 分支的标签
+          API_URL="https://api.github.com/repos/reF1nd/sing-box/tags?per_page=100"
+          TAGS=$(curl -s -H "Accept: application/vnd.github.v3+json" "$API_URL")
+          
+          # 匹配 v1.12.x-reF1nd 格式并取版本号最大的一个
+          RAW_TAG=$(echo "$TAGS" | jq -r '.[].name' | grep -E '^v1\.12\.' | grep 'reF1nd' | sort -V | tail -n 1)
+
+          if [ -z "$RAW_TAG" ] || [ "$RAW_TAG" == "null" ]; then
+            echo "错误: 未能在 reF1nd 仓库中找到符合 v1.12.x-reF1nd 的标签"
+            exit 1
+          fi
+
+          # 提取版本号（去掉 v），例如 1.12.14-reF1nd
+          FULL_VERSION=$(echo "$RAW_TAG" | sed 's/^v//')
+          
+          echo "new_version=$FULL_VERSION" >> $GITHUB_OUTPUT
+          echo "new_tag=$RAW_TAG" >> $GITHUB_OUTPUT
+          echo "检测到最新版本: $FULL_VERSION"
+
+      - name: Read Local Version
+        id: current
+        run: |
+          # 注意这里的路径是 sing-box/Makefile
+          FILE_PATH="sing-box/Makefile"
+          if [ ! -f "$FILE_PATH" ]; then
+            echo "错误: 未找到 $FILE_PATH"
+            exit 1
+          fi
+          OLD_VER=$(grep 'PKG_VERSION:=' "$FILE_PATH" | cut -d'=' -f2 | tr -d '[:space:]')
+          echo "old_version=$OLD_VER" >> $GITHUB_OUTPUT
+          echo "本地当前版本: $OLD_VER"
+
+      - name: Update Makefile and Calculate Hash
+        if: steps.get_tag.outputs.new_version != steps.current.outputs.old_version
+        run: |
+          NEW_VER=${{ steps.get_tag.outputs.new_version }}
+          NEW_TAG=${{ steps.get_tag.outputs.new_tag }}
+          FILE_PATH="sing-box/Makefile"
+          
+          # 1. 计算新版本的 Hash
+          SOURCE_URL="https://github.com/reF1nd/sing-box/archive/refs/tags/${NEW_TAG}.tar.gz"
+          echo "正在计算新 Hash: $SOURCE_URL"
+          NEW_HASH=$(curl -L -s "$SOURCE_URL" | sha256sum | awk '{print $1}')
+          
+          if [ -z "$NEW_HASH" ]; then echo "Hash 计算失败"; exit 1; fi
+
+          # 2. 修改指定目录下的 Makefile
+          sed -i "s@^PKG_VERSION:=.*@PKG_VERSION:=$NEW_VER@" "$FILE_PATH"
+          sed -i "s@^PKG_HASH:=.*@PKG_HASH:=$NEW_HASH@" "$FILE_PATH"
+
+          # 3. 提交更改到当前仓库
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add "$FILE_PATH"
+          git commit -m "sing-box: 自动更新至 $NEW_VER"
+          git push
