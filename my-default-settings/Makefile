@@ -22,6 +22,7 @@ define Package/my-default-settings
 	TITLE:=LuCI support for my default settings
 	PKGARCH:=all
 	DEPENDS:= \
+		+luci \
 		+luci-compat \
 		+@LUCI_LANG_zh_Hans \
 		+luci-i18n-base-zh-cn
