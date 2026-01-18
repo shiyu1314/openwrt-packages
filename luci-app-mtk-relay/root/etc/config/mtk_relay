@@ -1,0 +1,5 @@
+
+config global 'settings'
+	option enabled '1'
+	option check_interval '30'
+

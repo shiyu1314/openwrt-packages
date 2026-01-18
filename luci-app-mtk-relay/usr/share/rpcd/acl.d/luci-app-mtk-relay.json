@@ -1,0 +1,11 @@
+{
+    "luci-app-mtk-relay": {
+        "read": {
+            "file": { "/tmp/mtk_relay_status.json": [ "read" ] },
+            "uci": [ "mtk_relay" ]
+        },
+        "write": {
+            "uci": [ "mtk_relay" ]
+        }
+    }
+}

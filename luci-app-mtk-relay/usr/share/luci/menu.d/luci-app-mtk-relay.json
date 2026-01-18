@@ -1,0 +1,10 @@
+{
+	"admin/network/mtk_relay": {
+		"title": "中继增强",
+		"action": {
+			"type": "view",
+			"path": "mtk_relay"
+		},
+		"order": 90
+	}
+}
