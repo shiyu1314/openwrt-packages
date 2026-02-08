@@ -1,0 +1,6 @@
+config main
+	option 'hostnet' '0'
+	option 'http_port' '8097'
+	option 'image_name' 'shiyu1314/embyserver-crack_arm32v7'
+	option 'config_path' ''
+
