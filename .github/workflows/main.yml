@@ -22,11 +22,11 @@ jobs:
           API_URL="https://api.github.com/repos/reF1nd/sing-box/tags?per_page=100"
           TAGS=$(curl -s -H "Accept: application/vnd.github.v3+json" "$API_URL")
           
-          # 匹配 v1.12.x-reF1nd 格式并取版本号最大的一个
-          RAW_TAG=$(echo "$TAGS" | jq -r '.[].name' | grep -E '^v1\.12\.' | grep 'reF1nd' | sort -V | tail -n 1)
+          # 匹配 v1.13.x-reF1nd 格式并取版本号最大的一个
+          RAW_TAG=$(echo "$TAGS" | jq -r '.[].name' | grep -E '^v1\.13\.' | grep 'reF1nd' | sort -V | tail -n 1)
 
           if [ -z "$RAW_TAG" ] || [ "$RAW_TAG" == "null" ]; then
-            echo "错误: 未能在 reF1nd 仓库中找到符合 v1.12.x-reF1nd 的标签"
+            echo "错误: 未能在 reF1nd 仓库中找到符合 v1.13.x-reF1nd 的标签"
             exit 1
           fi
 
