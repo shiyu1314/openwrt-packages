@@ -1,0 +1,68 @@
+name: Auto Update sing-box
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Get Latest reF1nd 1.13.x Tag
+        id: get_tag
+        run: |
+          API_URL="https://api.github.com/repos/reF1nd/sing-box/tags?per_page=100"
+          TAGS=$(curl -s -H "Accept: application/vnd.github.v3+json" "$API_URL")
+          
+          RAW_TAG=$(echo "$TAGS" | jq -r '.[].name' | grep -E '^v1\.13\.' | grep 'reF1nd' | grep -vE 'alpha|beta|rc|pre' | sort -V | tail -n 1)
+
+          if [ -z "$RAW_TAG" ] || [ "$RAW_TAG" == "null" ]; then
+            echo "Error: Tag not found"
+            exit 1
+          fi
+
+          FULL_VERSION=$(echo "$RAW_TAG" | sed 's/^v//')
+          
+          echo "new_version=$FULL_VERSION" >> $GITHUB_OUTPUT
+          echo "new_tag=$RAW_TAG" >> $GITHUB_OUTPUT
+          echo "Detected version: $FULL_VERSION"
+
+      - name: Read Local Version
+        id: current
+        run: |
+          FILE_PATH="sing-box/Makefile"
+          if [ ! -f "$FILE_PATH" ]; then
+            echo "Error: $FILE_PATH not found"
+            exit 1
+          fi
+          OLD_VER=$(grep 'PKG_VERSION:=' "$FILE_PATH" | cut -d'=' -f2 | tr -d '[:space:]')
+          echo "old_version=$OLD_VER" >> $GITHUB_OUTPUT
+          echo "Local version: $OLD_VER"
+
+      - name: Update Makefile and Calculate Hash
+        if: steps.get_tag.outputs.new_version != steps.current.outputs.old_version
+        run: |
+          NEW_VER=${{ steps.get_tag.outputs.new_version }}
+          NEW_TAG=${{ steps.get_tag.outputs.new_tag }}
+          FILE_PATH="sing-box/Makefile"
+          
+          SOURCE_URL="https://github.com/reF1nd/sing-box/archive/refs/tags/${NEW_TAG}.tar.gz"
+          NEW_HASH=$(curl -L -s "$SOURCE_URL" | sha256sum | awk '{print $1}')
+          
+          if [ -z "$NEW_HASH" ]; then exit 1; fi
+
+          sed -i "s@^PKG_VERSION:=.*@PKG_VERSION:=$NEW_VER@" "$FILE_PATH"
+          sed -i "s@^PKG_HASH:=.*@PKG_HASH:=$NEW_HASH@" "$FILE_PATH"
+
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add --chmod +x "$FILE_PATH"
+          git commit -m "sing-box: auto update to $NEW_VER"
+          git push
