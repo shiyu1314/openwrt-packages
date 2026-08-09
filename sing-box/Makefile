@@ -3,12 +3,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=sing-box
-PKG_VERSION:=1.14.0-beta.8-reF1nd
+PKG_VERSION:=1.14.0-beta.10-reF1nd
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/reF1nd/sing-box/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=1e8deada998853a42b8a02bbdeb52442175ab58332550fad205ac3282242de94
+PKG_HASH:=bc92a07b8feacd6b641812124b3ac720730c525f9fca5f9b73881361f8a44ee3
 
 PKG_LICENSE:=GPL-3.0-or-later
 PKG_LICENSE_FILES:=LICENSE
